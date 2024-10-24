@@ -26,28 +26,23 @@ export default function Home() {
 
   return (
     <>
-      <Authenticated>
-        <div>
-          {messages?.map((message, index) => (
-            <div key={index}>
-              <strong>{message.sender}</strong>:{message.content}
-            </div>
-          ))}
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              name="message"
-              id="message"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-            <button type="submit">Send</button>
-          </form>
-        </div>
-      </Authenticated>
-      <Unauthenticated>
-        <SignInButton />
-      </Unauthenticated>
+      <div>
+        {messages?.map((message, index) => (
+          <div key={index}>
+            <strong>{message.sender}</strong>:{message.content}
+          </div>
+        ))}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="message"
+            id="message"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <button type="submit">Send</button>
+        </form>
+      </div>
     </>
   );
 }
