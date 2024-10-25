@@ -1,31 +1,9 @@
 "use client";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
-import { RedirectToSignIn, SignOutButton } from "@clerk/nextjs";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { RedirectToSignIn } from "@clerk/nextjs";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { LogOutIcon, PlusIcon, User2Icon } from "lucide-react";
-import Link from "next/link";
-import { api } from "../../../convex/_generated/api";
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
-import { useQuery } from "convex/react";
-import { DropdownMenu } from "@/components/ui/dropdown-menu";
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+import { DashboardSidebar } from "./_components/sidebar";
 
 export default function DashboardLayout({
   children,
@@ -44,62 +22,5 @@ export default function DashboardLayout({
         <RedirectToSignIn />
       </Unauthenticated>
     </>
-  );
-}
-
-function DashboardSidebar() {
-  const user = useQuery(api.functions.user.get);
-  if (!user) return null;
-  return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/friends">
-                    <User2Icon /> Friends
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-          <SidebarGroupContent>
-            <SidebarGroupLabel>Direct Messages</SidebarGroupLabel>
-            <SidebarGroupAction>
-              <PlusIcon />
-              <span className="sr-only">New Direct Message</span>
-            </SidebarGroupAction>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton className="flex items-center gap-2">
-                      <Avatar className="size-6 overflow-hidden rounded-full">
-                        <AvatarImage src={user.image} />
-                        <AvatarFallback>{user.username[0]}</AvatarFallback>
-                      </Avatar>
-                      <p className="font-medium">{user.username}</p>
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem asChild>
-                      <SignOutButton />
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarFooter>
-    </Sidebar>
   );
 }
