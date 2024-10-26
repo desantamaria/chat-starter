@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./helpers";
+import { internal } from "../_generated/api";
 
 export const list = authenticatedQuery({
   args: {
@@ -50,6 +50,10 @@ export const create = authenticatedMutation({
       content,
       sender: ctx.user._id,
       directMessage,
+    });
+    await ctx.scheduler.runAfter(0, internal.functions.typing.remove, {
+      directMessage,
+      user: ctx.user._id,
     });
   },
 });
