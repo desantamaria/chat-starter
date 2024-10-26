@@ -37,7 +37,7 @@ export const listAccepted = authenticatedQuery({
 
 export const createFriendRequest = authenticatedMutation({
   args: {
-    username: v.id("users"),
+    username: v.string(),
   },
   handler: async (ctx, { username }) => {
     const user = await ctx.db
