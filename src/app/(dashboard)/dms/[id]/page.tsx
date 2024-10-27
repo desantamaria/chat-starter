@@ -13,6 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMutation, useQuery } from "convex/react";
 import { FunctionReturnType } from "convex/server";
 import {
+  ChevronDownIcon,
   LoaderIcon,
   MoreHorizontalIcon,
   PlusIcon,
@@ -34,7 +35,6 @@ export default function MessagePage({
 
   const directMessage = useQuery(api.functions.dm.get, { id });
   const messages = useQuery(api.functions.message.list, { directMessage: id });
-
   if (!directMessage) {
     return null;
   }
