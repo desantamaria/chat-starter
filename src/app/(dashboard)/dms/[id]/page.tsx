@@ -19,7 +19,7 @@ import {
   SendIcon,
   TrashIcon,
 } from "lucide-react";
-import { use, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
@@ -34,6 +34,7 @@ export default function MessagePage({
 
   const directMessage = useQuery(api.functions.dm.get, { id });
   const messages = useQuery(api.functions.message.list, { directMessage: id });
+
   if (!directMessage) {
     return null;
   }
@@ -47,7 +48,10 @@ export default function MessagePage({
         </Avatar>
         <h1 className="font-semibold">{directMessage.user.username}</h1>
       </header>
-      <ScrollArea className="h-full py-4">
+      <ScrollArea
+        className="h-full py-4"
+        scrollToBottom={messages && messages.length > 0}
+      >
         {messages?.map((message) => (
           <MessageItem key={message._id} message={message} />
         ))}
