@@ -143,6 +143,7 @@ function MessageInput({
   const generateUploadUrl = useMutation(
     api.functions.message.generateUploadUrl
   );
+  const removeFileById = useMutation(api.functions.message.removeFileById);
   const [attachment, setAttachment] = useState<Id<"_storage">>();
   const [file, setFile] = useState<File>();
   const [isUploading, setIsUploading] = useState(false);
@@ -161,6 +162,14 @@ function MessageInput({
     const { storageId } = (await res.json()) as { storageId: Id<"_storage"> };
     setAttachment(storageId);
     setIsUploading(false);
+  };
+
+  const handleRemoveFile = async () => {
+    if (attachment) {
+      await removeFileById({ storageId: attachment });
+    }
+    setAttachment(undefined);
+    setFile(undefined);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -188,7 +197,13 @@ function MessageInput({
           <span className="sr-only">Attach</span>
         </Button>
         <div className="flex flex-col flex-1 gap-2">
-          {file && <ImagePreview file={file} isUploading={isUploading} />}
+          {file && (
+            <ImagePreview
+              file={file}
+              isUploading={isUploading}
+              onRemove={handleRemoveFile}
+            />
+          )}
           <Input
             placeholder="Message"
             value={content}
@@ -218,9 +233,11 @@ function MessageInput({
 function ImagePreview({
   file,
   isUploading,
+  onRemove,
 }: {
   file: File;
   isUploading: boolean;
+  onRemove: () => void;
 }) {
   return (
     <div className="relative size-41">
@@ -230,6 +247,7 @@ function ImagePreview({
             size="icon"
             variant="ghost"
             className="border bg-red-100 hover:bg-red-200"
+            onClick={onRemove}
           >
             <Trash />
             <span className="sr-only">Remove</span>
