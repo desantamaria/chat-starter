@@ -18,6 +18,7 @@ import {
   MoreHorizontalIcon,
   PlusIcon,
   SendIcon,
+  Trash,
   TrashIcon,
 } from "lucide-react";
 import { use, useEffect, useRef, useState } from "react";
@@ -223,22 +224,34 @@ function ImagePreview({
 }) {
   return (
     <div className="relative size-41">
-      <Card className="h-max max-w-fit p-2.5">
-        <div className="absolute inset-0 flex items-center justify-center"></div>
-        <Image
-          src={URL.createObjectURL(file)}
-          alt="Attachment"
-          width={300}
-          height={300}
-          className="rounded border overflow-hidden"
-        />
-        <p className="text-sm text-muted-foreground">{file.name}</p>
-        <p className="text-sm text-muted-foreground">
-          {file.size < 1024 * 1024
-            ? `${(file.size / 1024).toFixed(2)} KB`
-            : `${(file.size / (1024 * 1024)).toFixed(2)} MB`}
-        </p>
-      </Card>
+      <div className="h-full max-w-fit">
+        <div className="relative flex justify-end -right-4 top-5">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="border bg-red-100 hover:bg-red-200"
+          >
+            <Trash />
+            <span className="sr-only">Remove</span>
+          </Button>
+        </div>
+        <Card className="p-2.5">
+          <Image
+            src={URL.createObjectURL(file)}
+            alt="Attachment"
+            width={300}
+            height={300}
+            className="rounded border overflow-hidden"
+          />
+          <p className="text-sm text-muted-foreground">{file.name}</p>
+          <p className="text-sm text-muted-foreground">
+            {file.size < 1024 * 1024
+              ? `${(file.size / 1024).toFixed(2)} KB`
+              : `${(file.size / (1024 * 1024)).toFixed(2)} MB`}
+          </p>
+        </Card>
+      </div>
+
       {isUploading && (
         <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
           <LoaderIcon className="size-8 animate-spin" />
