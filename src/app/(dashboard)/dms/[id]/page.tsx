@@ -92,15 +92,16 @@ function MessageItem({ message }: { message: Message }) {
           {message.sender?.username ?? "Deleted User"}
         </p>
         <p className="text-sm">{message.content}</p>
-        {message.attachment && (
+        {message.attachments?.map((attachment, index) => (
           <Image
-            src={message.attachment}
+            key={index}
+            src={attachment ?? ""}
             width={300}
             height={300}
             className="rounded border overflow-hidden"
             alt="Attachment"
           />
-        )}
+        ))}
       </div>
       <MessageActions message={message} />
     </div>
@@ -144,15 +145,15 @@ function MessageInput({
     api.functions.message.generateUploadUrl
   );
   const removeFileById = useMutation(api.functions.message.removeFileById);
-  const [attachment, setAttachment] = useState<Id<"_storage">>();
-  const [file, setFile] = useState<File>();
+  const [attachments, setAttachments] = useState<Id<"_storage">[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setFile(file);
+    setFiles([...files, file]);
     setIsUploading(true);
     const url = await generateUploadUrl();
     const res = await fetch(url, {
@@ -160,25 +161,33 @@ function MessageInput({
       body: file,
     });
     const { storageId } = (await res.json()) as { storageId: Id<"_storage"> };
-    setAttachment(storageId);
+    setAttachments([...attachments, storageId]);
     setIsUploading(false);
   };
 
-  const handleRemoveFile = async () => {
-    if (attachment) {
-      await removeFileById({ storageId: attachment });
+  const handleRemoveFile = async (index: number) => {
+    try {
+      if (attachments[index]) {
+        await removeFileById({ storageId: attachments[index] });
+      }
+      const newAttachments = attachments.filter((_, i) => i !== index);
+      const newFiles = files.filter((_, i) => i !== index);
+      setAttachments(newAttachments);
+      setFiles(newFiles);
+    } catch (error) {
+      toast.error("Failed to remove file", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     }
-    setAttachment(undefined);
-    setFile(undefined);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await sendMessage({ directMessage, content, attachment });
+      await sendMessage({ directMessage, content, attachments });
       setContent("");
-      setAttachment(undefined);
-      setFile(undefined);
+      setAttachments([]);
+      setFiles([]);
     } catch (error) {
       toast.error("Failed to send message", {
         description: error instanceof Error ? error.message : "Unknown error",
@@ -197,9 +206,9 @@ function MessageInput({
           <span className="sr-only">Attach</span>
         </Button>
         <div className="flex flex-col flex-1 gap-2">
-          {file && (
+          {files && (
             <ImagePreview
-              file={file}
+              files={files}
               isUploading={isUploading}
               onRemove={handleRemoveFile}
             />
@@ -231,44 +240,47 @@ function MessageInput({
 }
 
 function ImagePreview({
-  file,
+  files,
   isUploading,
   onRemove,
 }: {
-  file: File;
+  files: File[];
   isUploading: boolean;
-  onRemove: () => void;
+  onRemove: (index: number) => void;
 }) {
   return (
-    <div className="relative size-41">
-      <div className="h-full max-w-fit">
-        <div className="relative flex justify-end -right-4 top-5">
-          <Button
-            size="icon"
-            variant="ghost"
-            className="border bg-red-100 hover:bg-red-200"
-            onClick={onRemove}
-          >
-            <Trash />
-            <span className="sr-only">Remove</span>
-          </Button>
+    <div className="relative size-41 flex gap-5">
+      {files?.map((file, index) => (
+        <div className="h-full max-w-fit" key={index}>
+          <div className="relative flex justify-end -right-4 top-5">
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              className="border bg-red-100 hover:bg-red-200"
+              onClick={() => onRemove(index)}
+            >
+              <Trash />
+              <span className="sr-only">Remove</span>
+            </Button>
+          </div>
+          <Card className="p-2.5">
+            <Image
+              src={URL.createObjectURL(file)}
+              alt="Attachment"
+              width={300}
+              height={300}
+              className="rounded border overflow-hidden"
+            />
+            <p className="text-sm text-muted-foreground">{file.name}</p>
+            <p className="text-sm text-muted-foreground">
+              {file.size < 1024 * 1024
+                ? `${(file.size / 1024).toFixed(2)} KB`
+                : `${(file.size / (1024 * 1024)).toFixed(2)} MB`}
+            </p>
+          </Card>
         </div>
-        <Card className="p-2.5">
-          <Image
-            src={URL.createObjectURL(file)}
-            alt="Attachment"
-            width={300}
-            height={300}
-            className="rounded border overflow-hidden"
-          />
-          <p className="text-sm text-muted-foreground">{file.name}</p>
-          <p className="text-sm text-muted-foreground">
-            {file.size < 1024 * 1024
-              ? `${(file.size / 1024).toFixed(2)} KB`
-              : `${(file.size / (1024 * 1024)).toFixed(2)} MB`}
-          </p>
-        </Card>
-      </div>
+      ))}
 
       {isUploading && (
         <div className="absolute inset-0 bg-background/50 flex items-center justify-center">

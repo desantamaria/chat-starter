@@ -25,10 +25,14 @@ export const list = authenticatedQuery({
     return await Promise.all(
       messages.map(async (message) => {
         const sender = await ctx.db.get(message.sender);
-        const attachment = message.attachment
-          ? await ctx.storage.getUrl(message.attachment)
+        const attachments = message.attachments
+          ? await Promise.all(
+              message.attachments.map(async (attachment) => {
+                return await ctx.storage.getUrl(attachment);
+              })
+            )
           : undefined;
-        return { ...message, attachment, sender };
+        return { ...message, attachments, sender };
       })
     );
   },
@@ -37,10 +41,10 @@ export const list = authenticatedQuery({
 export const create = authenticatedMutation({
   args: {
     content: v.string(),
-    attachment: v.optional(v.id("_storage")),
+    attachments: v.optional(v.array(v.id("_storage"))),
     directMessage: v.id("directMessages"),
   },
-  handler: async (ctx, { content, attachment, directMessage }) => {
+  handler: async (ctx, { content, attachments, directMessage }) => {
     const member = await ctx.db
       .query("directMessageMembers")
       .withIndex("by_direct_message_user", (q) =>
@@ -52,7 +56,7 @@ export const create = authenticatedMutation({
     }
     await ctx.db.insert("messages", {
       content,
-      attachment,
+      attachments,
       directMessage,
       sender: ctx.user._id,
     });
@@ -75,8 +79,12 @@ export const remove = authenticatedMutation({
       throw new Error("You are not the sender of this message");
     }
     await ctx.db.delete(id);
-    if (message.attachment) {
-      await ctx.storage.delete(message.attachment);
+    if (message.attachments) {
+      await Promise.all(
+        message.attachments.map(async (attachment) => {
+          await ctx.storage.delete(attachment);
+        })
+      );
     }
   },
 });
