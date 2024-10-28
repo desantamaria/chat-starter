@@ -248,6 +248,12 @@ function ImagePreview({
   isUploading: boolean;
   onRemove: (index: number) => void;
 }) {
+  const [fileUrls, setFileUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setFileUrls(urls);
+  }, [files]);
   return (
     <div className="relative size-41 flex gap-5">
       {files?.map((file, index) => (
@@ -265,13 +271,16 @@ function ImagePreview({
             </Button>
           </div>
           <Card className="p-2.5">
-            <Image
-              src={URL.createObjectURL(file)}
-              alt="Attachment"
-              width={300}
-              height={300}
-              className="rounded border overflow-hidden"
-            />
+            {fileUrls[index] && (
+              <Image
+                src={fileUrls[index]}
+                alt="Attachment"
+                width={300}
+                height={300}
+                className="rounded border overflow-hidden"
+              />
+            )}
+
             <p className="text-sm text-muted-foreground">{file.name}</p>
             <p className="text-sm text-muted-foreground">
               {file.size < 1024 * 1024
