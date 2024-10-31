@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +14,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMutation, useQuery } from "convex/react";
 import { FunctionReturnType } from "convex/server";
 import {
-  ChevronDownIcon,
   LoaderIcon,
   MoreHorizontalIcon,
   PlusIcon,
@@ -21,12 +21,11 @@ import {
   Trash,
   TrashIcon,
 } from "lucide-react";
+import Image from "next/image";
 import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import Image from "next/image";
-import { Card } from "@/components/ui/card";
 
 export default function MessagePage({
   params,
@@ -252,6 +251,7 @@ function ImagePreview({
 
   useEffect(() => {
     const urls = files.map((file) => URL.createObjectURL(file));
+    console.log(urls);
     setFileUrls(urls);
   }, [files]);
   return (
@@ -264,7 +264,10 @@ function ImagePreview({
               size="icon"
               variant="ghost"
               className="border bg-red-100 hover:bg-red-200"
-              onClick={() => onRemove(index)}
+              onClick={() => {
+                console.log(fileUrls[index]);
+                onRemove(index);
+              }}
             >
               <Trash />
               <span className="sr-only">Remove</span>
