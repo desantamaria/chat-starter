@@ -90,7 +90,18 @@ function MessageItem({ message }: { message: Message }) {
         <p className="text-xs text-muted-foreground">
           {message.sender?.username ?? "Deleted User"}
         </p>
-        <p className="text-sm">{message.content}</p>
+        {message.deleted ? (
+          <>
+            <p className="text-sm text-destructive">
+              This message has been deleted.{" "}
+              {message.deletedReason && <span>{message.deletedReason}</span>}
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm">{message.content}</p>
+          </>
+        )}
         {message.attachments?.map((attachment, index) => (
           <Image
             key={index}
