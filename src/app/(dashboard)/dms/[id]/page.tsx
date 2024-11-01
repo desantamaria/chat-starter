@@ -26,6 +26,7 @@ import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { chatViolations } from "@/data/chatViolation";
 
 export default function MessagePage({
   params,
@@ -94,7 +95,11 @@ function MessageItem({ message }: { message: Message }) {
           <>
             <p className="text-sm text-destructive">
               This message has been deleted.{" "}
-              {message.deletedReason && <span>{message.deletedReason}</span>}
+              {message.deletedReason && (
+                <span>
+                  Reason: {chatViolations[message.deletedReason] || ""}
+                </span>
+              )}
             </p>
           </>
         ) : (
