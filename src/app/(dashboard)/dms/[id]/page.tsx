@@ -198,6 +198,9 @@ function MessageInput({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (content.length === 0) {
+      return;
+    }
     try {
       await sendMessage({ directMessage, content, attachments });
       setContent("");
