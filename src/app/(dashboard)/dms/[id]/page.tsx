@@ -26,7 +26,7 @@ import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { chatViolations } from "@/data/chatViolation";
+import { chatViolations } from "@/data/chatDeletionReason";
 
 export default function MessagePage({
   params,
