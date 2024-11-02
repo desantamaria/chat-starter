@@ -12,5 +12,6 @@ export const chatViolations : Record<string, string> = {
     "S11": "Enabling or encouraging suicide, self-injury, or disordered eating",
     "S12": "Content containing erotica",
     "S13": "Sharing incorrect information about electoral systems and voting processes",
-    "S14": "Attempting to abuse code interpreters through exploits or attacks"
+    "S14": "Attempting to abuse code interpreters through exploits or attacks",
+    "D1": "Deleted By Sender"
 } as const;

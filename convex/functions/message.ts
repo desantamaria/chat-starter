@@ -81,7 +81,10 @@ export const remove = authenticatedMutation({
     } else if (message.sender !== ctx.user._id) {
       throw new Error("You are not the sender of this message");
     }
-    await ctx.db.delete(id);
+    await ctx.runMutation(internal.functions.moderation.deleteMessage, {
+      id,
+      reason: "D1",
+    });
     if (message.attachments) {
       await Promise.all(
         message.attachments.map(async (attachment) => {
