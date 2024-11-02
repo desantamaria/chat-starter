@@ -27,6 +27,12 @@ import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { chatViolations } from "@/data/chatDeletionReason";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function MessagePage({
   params,
@@ -93,10 +99,14 @@ function MessageItem({ message }: { message: Message }) {
         </p>
         {message.deleted ? (
           <>
-            <p className="text-sm text-destructive">
+            <p className={`text-sm text-destructive`}>
               This message has been deleted.{" "}
               {message.deletedReason && (
-                <span>
+                <span
+                  className={
+                    message.deletedReason == "D1" ? "text-muted-foreground" : ""
+                  }
+                >
                   Reason: {chatViolations[message.deletedReason] || ""}
                 </span>
               )}
@@ -107,19 +117,34 @@ function MessageItem({ message }: { message: Message }) {
             <p className="text-sm">{message.content}</p>
           </>
         )}
-        {message.attachments?.map((attachment, index) => (
-          <Image
-            key={index}
-            src={attachment ?? ""}
-            width={300}
-            height={300}
-            className="rounded border overflow-hidden"
-            alt="Attachment"
-          />
-        ))}
+        <div className="w-[%50]">
+          {message.attachments?.map((attachment, index) => (
+            <ImageFocus key={index}>
+              <Image
+                src={attachment ?? ""}
+                width={300}
+                height={300}
+                className="rounded border overflow-hidden hover:shadow-lg transition-all"
+                alt="Attachment"
+              />
+            </ImageFocus>
+          ))}
+        </div>
       </div>
       <MessageActions message={message} />
     </div>
+  );
+}
+
+function ImageFocus({ children }: { children: React.ReactNode }) {
+  return (
+    <Dialog>
+      <DialogTrigger>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogTitle />
+        {children}
+      </DialogContent>
+    </Dialog>
   );
 }
 
