@@ -10,6 +10,7 @@ import {
 import { UserIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CreateServer } from "./create-server";
 
 export function MainSidebar() {
   const pathname = usePathname();
@@ -29,6 +30,9 @@ export function MainSidebar() {
                     <UserIcon />
                   </Link>
                 </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <CreateServer />
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
