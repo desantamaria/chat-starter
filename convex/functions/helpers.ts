@@ -7,7 +7,7 @@ import { getCurrentUser } from "./user";
 import { mutation, query, QueryCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
 
-export interface authenticatedQueryCtx extends QueryCtx {
+export interface AuthenticatedQueryCtx extends QueryCtx {
   user: Doc<"users">;
 }
 
@@ -33,8 +33,24 @@ export const authenticatedMutation = customMutation(
   })
 );
 
-export const assertMember = async (
-  ctx: authenticatedQueryCtx,
+export const assertServerMember = async (
+  ctx: AuthenticatedQueryCtx,
+  serverId: Id<"servers">
+) => {
+  const serverMember = await ctx.db
+    .query("serverMembers")
+    .withIndex("by_serverId_userId", (q) =>
+      q.eq("serverId", serverId).eq("userId", ctx.user._id)
+    )
+    .unique();
+
+  if (!serverMember) {
+    throw new Error("You are not a member of this server");
+  }
+};
+
+export const assertChannelMember = async (
+  ctx: AuthenticatedQueryCtx,
   dmOrChannelId: Id<"directMessages" | "channels">
 ) => {
   const dmOrChannel = await ctx.db.get(dmOrChannelId);
@@ -44,7 +60,7 @@ export const assertMember = async (
     // checking if user is a part of the server
     const serverMember = await ctx.db
       .query("serverMembers")
-      .withIndex("by_server_id_user_id", (q) =>
+      .withIndex("by_serverId_userId", (q) =>
         q.eq("serverId", dmOrChannel.serverId).eq("userId", ctx.user._id)
       )
       .unique();

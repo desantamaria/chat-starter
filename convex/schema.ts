@@ -44,9 +44,9 @@ export default defineSchema({
     serverId: v.id("servers"),
     userId: v.id("users"),
   })
-    .index("by_server_id", ["serverId"])
-    .index("by_user_id", ["userId"])
-    .index("by_server_id_user_id", ["serverId", "userId"]),
+    .index("by_serverId", ["serverId"])
+    .index("by_userId", ["userId"])
+    .index("by_serverId_userId", ["serverId", "userId"]),
   invites: defineTable({
     serverId: v.id("servers"),
     expiresAt: v.optional(v.number()),
