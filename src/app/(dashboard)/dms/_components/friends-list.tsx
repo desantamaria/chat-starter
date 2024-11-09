@@ -1,20 +1,18 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Check, MessageCircleIcon, XIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useMutation, useQuery } from "convex/react";
+import { Check, MessageCircleIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../../../../convex/_generated/api";
 
 export function PendingFriendsList() {
   const friends = useQuery(api.functions.friend.listPending);

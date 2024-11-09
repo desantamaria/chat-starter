@@ -28,13 +28,13 @@ import {
   TrashIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
-import { MsgScrollArea } from "./msg-scroll-area";
-import { Id } from "../../convex/_generated/dataModel";
-import { api } from "../../convex/_generated/api";
 import { useImageUpload } from "@/hooks/use-image-upload";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
+import { MsgScrollArea } from "./msg-scroll-area";
 
 export function Messages({ id }: { id: Id<"directMessages" | "channels"> }) {
   const messages = useQuery(api.functions.message.list, { dmOrChannelId: id });

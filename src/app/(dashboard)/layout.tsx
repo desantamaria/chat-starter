@@ -1,9 +1,7 @@
 "use client";
 
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { RedirectToSignIn } from "@clerk/nextjs";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { DashboardSidebar } from "./_components/sidebar";
 
 export default function DashboardLayout({
   children,
@@ -12,12 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <>
-      <Authenticated>
-        <SidebarProvider>
-          <DashboardSidebar />
-          {children}
-        </SidebarProvider>
-      </Authenticated>
+      <Authenticated>{children}</Authenticated>
       <Unauthenticated>
         <RedirectToSignIn />
       </Unauthenticated>
