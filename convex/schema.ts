@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { channel } from "diagnostics_channel";
 
 export default defineSchema({
   users: defineTable({
@@ -28,19 +29,44 @@ export default defineSchema({
     .index("by_direct_message", ["directMessage"])
     .index("by_direct_message_user", ["directMessage", "user"])
     .index("by_user", ["user"]),
+
+  servers: defineTable({
+    name: v.string(),
+    ownerId: v.id("users"),
+    iconId: v.optional(v.id("_storage")),
+    defaultChannelId: v.optional(v.id("channels")),
+  }),
+  channels: defineTable({
+    name: v.string(),
+    serverId: v.id("servers"),
+  }).index("by_serverId", ["serverId"]),
+  serverMembers: defineTable({
+    serverId: v.id("servers"),
+    userId: v.id("users"),
+  })
+    .index("by_server_id", ["serverId"])
+    .index("by_user_id", ["userId"])
+    .index("by_server_id_user_id", ["serverId", "userId"]),
+  invites: defineTable({
+    serverId: v.id("servers"),
+    expiresAt: v.optional(v.number()),
+    maxUses: v.optional(v.number()),
+    uses: v.number(),
+  }),
+
   messages: defineTable({
     sender: v.id("users"),
     content: v.string(),
-    directMessage: v.id("directMessages"),
+    dmOrChannelId: v.union(v.id("directMessages"), v.id("channels")),
     attachments: v.optional(v.array(v.id("_storage"))),
     deleted: v.optional(v.boolean()),
     deletedReason: v.optional(v.string()),
-  }).index("by_direct_message", ["directMessage"]),
+  }).index("by_dmOrChannelId", ["dmOrChannelId"]),
   typingIndicators: defineTable({
     user: v.id("users"),
-    directMessage: v.id("directMessages"),
+    dmOrChannelId: v.union(v.id("directMessages"), v.id("channels")),
     expiresAt: v.number(),
   })
-    .index("by_direct_message", ["directMessage"])
-    .index("by_user_direct_message", ["user", "directMessage"]),
+    .index("by_dmOrChannelId", ["dmOrChannelId"])
+    .index("by_user_dmOrChannelId", ["user", "dmOrChannelId"]),
 });
