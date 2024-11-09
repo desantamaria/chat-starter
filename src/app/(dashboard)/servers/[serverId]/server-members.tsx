@@ -9,7 +9,7 @@ export function ServerMembers({ id }: { id: Id<"servers"> }) {
   return (
     <div className="flex flex-col max-w-80 w-full border-l p-4 bg-muted">
       {members?.map((member) => (
-        <div className="flex items-center gap-2">
+        <div key={member._id} className="flex items-center gap-2">
           <Avatar className="size-8 border">
             <AvatarImage src={member.image}></AvatarImage>
             <AvatarFallback>{member.username[0]}</AvatarFallback>

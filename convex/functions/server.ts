@@ -39,20 +39,6 @@ export const get = authenticatedQuery({
   },
 });
 
-export const channels = authenticatedQuery({
-  args: {
-    id: v.id("servers"),
-  },
-  handler: async (ctx, { id }) => {
-    await assertServerMember(ctx, id);
-    const channels = await ctx.db
-      .query("channels")
-      .withIndex("by_serverId", (q) => q.eq("serverId", id))
-      .collect();
-    return channels;
-  },
-});
-
 export const members = authenticatedQuery({
   args: {
     id: v.id("servers"),
