@@ -42,7 +42,7 @@ export function MainSidebar() {
                     tooltip={server.name}
                   >
                     <Link
-                      href={`servers/${server._id}/channels/${server.defaultChannelId}`}
+                      href={`/servers/${server._id}/channels/${server.defaultChannelId}`}
                     >
                       <Avatar className="rounded-none">
                         {server.iconUrl && <AvatarImage src={server.iconUrl} />}
