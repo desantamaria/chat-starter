@@ -3,7 +3,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { use } from "react";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { ServerSidebar } from "./channels/[channelId]/server-sidebar";
+import { ServerSidebar } from "./server-sidebar";
 import { ServerMembers } from "./server-members";
 
 export default function ServerLayout({
