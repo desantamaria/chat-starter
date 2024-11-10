@@ -25,6 +25,7 @@ import Link from "next/link";
 import { api } from "../../../../../convex/_generated/api";
 import { NewDirectMessage } from "./new-direct-message";
 import { usePathname } from "next/navigation";
+import { ThemeButton } from "@/components/theme-button";
 
 export function DMSidebar() {
   const user = useQuery(api.functions.user.get);
@@ -80,6 +81,9 @@ export function DMSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <ThemeButton />
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
