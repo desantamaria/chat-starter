@@ -12,6 +12,7 @@ export function useImageUpload({ singleFile }: { singleFile: boolean }) {
   const [storageIds, setStorageIds] = useState<Id<"_storage">[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const open = () => {
@@ -29,8 +30,10 @@ export function useImageUpload({ singleFile }: { singleFile: boolean }) {
     setIsUploading(true);
     if (singleFile) {
       setPreviewUrls([URL.createObjectURL(file)]);
+      setFiles([file]);
     } else {
       setPreviewUrls([...previewUrls, URL.createObjectURL(file)]);
+      setFiles([...files, file]);
     }
 
     const url = await generateUploadUrl();
@@ -54,6 +57,7 @@ export function useImageUpload({ singleFile }: { singleFile: boolean }) {
   const reset = () => {
     setStorageIds([]);
     setPreviewUrls([]);
+    setFiles([]);
     if (inputRef.current) {
       inputRef.current.value = "";
     }
@@ -64,10 +68,12 @@ export function useImageUpload({ singleFile }: { singleFile: boolean }) {
       await removeFileById({ storageId: storageIds[index] });
       setPreviewUrls(previewUrls.filter((_, i) => i !== index));
       setStorageIds(storageIds.filter((_, i) => i !== index));
+      setFiles(files.filter((_, i) => i !== index));
     }
   };
 
   return {
+    files,
     storageIds,
     previewUrls,
     isUploading,

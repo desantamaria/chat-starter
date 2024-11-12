@@ -187,6 +187,7 @@ function MessageInput({ id }: { id: Id<"directMessages" | "channels"> }) {
         <div className="flex flex-col flex-1 gap-2">
           {imageUpload.previewUrls && (
             <ImagePreview
+              files={imageUpload.files}
               urls={imageUpload.previewUrls}
               isUploading={imageUpload.isUploading}
               onRemove={imageUpload.removeByIndex}
@@ -214,10 +215,12 @@ function MessageInput({ id }: { id: Id<"directMessages" | "channels"> }) {
 }
 
 function ImagePreview({
+  files,
   urls,
   isUploading,
   onRemove,
 }: {
+  files: File[];
   urls: string[];
   isUploading: boolean;
   onRemove: (index: number) => void;
@@ -251,12 +254,12 @@ function ImagePreview({
               />
             )}
 
-            {/* <p className="text-sm text-muted-foreground">{file.name}</p>
+            <p className="text-sm text-muted-foreground">{files[index].name}</p>
             <p className="text-sm text-muted-foreground">
-              {file.size < 1024 * 1024
-                ? `${(file.size / 1024).toFixed(2)} KB`
-                : `${(file.size / (1024 * 1024)).toFixed(2)} MB`}
-            </p> */}
+              {files[index].size < 1024 * 1024
+                ? `${(files[index].size / 1024).toFixed(2)} KB`
+                : `${(files[index].size / (1024 * 1024)).toFixed(2)} MB`}
+            </p>
           </Card>
         </div>
       ))}
