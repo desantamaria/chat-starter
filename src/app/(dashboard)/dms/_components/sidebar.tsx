@@ -81,10 +81,7 @@ export function DMSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <ThemeButton />
-              </SidebarMenuItem>
-              <SidebarMenuItem>
+              <SidebarMenuItem className="flex gap-2 items-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <SidebarMenuButton className="flex items-center gap-2">
@@ -95,12 +92,13 @@ export function DMSidebar() {
                       <p className="font-medium">{user.username}</p>
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent>
+                  <DropdownMenuContent className="w-full">
                     <DropdownMenuItem asChild>
                       <SignOutButton />
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <ThemeButton />
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>

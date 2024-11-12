@@ -131,7 +131,7 @@ function IconButton({
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          className={cn("rounded-full", className)}
+          className={cn("rounded-full dark:text-black", className)}
           variant="outline"
           size="icon"
           onClick={onClick}
