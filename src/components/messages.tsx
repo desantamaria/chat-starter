@@ -73,8 +73,11 @@ function MessageItem({ message }: { message: Message }) {
         <AvatarFallback />
       </Avatar>
       <div className="flex flex-col mr-auto">
-        <p className="text-xs text-muted-foreground">
+        <p className=" flex gap-3 text-xs">
           {message.sender?.username ?? "Deleted User"}
+          <span className="text-muted-foreground">
+            {formatDate(parseTimestamp(message._creationTime))}
+          </span>
         </p>
         {message.deleted ? (
           <>
@@ -113,6 +116,31 @@ function MessageItem({ message }: { message: Message }) {
       <MessageActions message={message} />
     </div>
   );
+}
+
+function parseTimestamp(timestamp: number): Date {
+  // Convert to milliseconds (if microseconds is provided)
+  // Check if the number is too large to be milliseconds
+  const milliseconds =
+    timestamp > 1e13
+      ? Math.floor(timestamp / 1000) // Convert microseconds to milliseconds
+      : timestamp;
+
+  return new Date(milliseconds);
+}
+
+function formatDate(date: Date): string {
+  const month = (date.getMonth() + 1).toString(); // getMonth() is 0-based
+  const day = date.getDate().toString();
+  const year = date.getFullYear().toString().slice(-2); // Get last 2 digits
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  // Convert hours to 12-hour format with AM/PM
+  const period = hours >= 12 ? "PM" : "AM";
+  const hours12 = hours % 12 || 12; // Convert 0 to 12 for midnight
+
+  return `${month}/${day}/${year}, ${hours12}:${minutes} ${period}`;
 }
 
 function ImageFocus({ children }: { children: React.ReactNode }) {
