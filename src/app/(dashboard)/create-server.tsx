@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export function CreateServer() {
-  const imageUpload = useImageUpload();
+  const imageUpload = useImageUpload({ singleFile: true });
   const createServer = useMutation(api.functions.server.create);
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
@@ -35,6 +35,7 @@ export function CreateServer() {
       });
       router.push(`/servers/${serverId}/channels/${defaultChannelId}`);
       setOpen(false);
+      imageUpload.reset();
     } catch (error) {
       toast.error("Failed to create server", {
         description:
@@ -73,11 +74,7 @@ export function CreateServer() {
               <Avatar className="size-10 border relative">
                 {imageUpload.previewUrls && (
                   <AvatarImage
-                    src={
-                      imageUpload.previewUrls[
-                        imageUpload.previewUrls.length - 1
-                      ]
-                    }
+                    src={imageUpload.previewUrls[0]}
                     className="absolute inset-0"
                   />
                 )}

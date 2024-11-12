@@ -156,47 +156,7 @@ function MessageInput({ id }: { id: Id<"directMessages" | "channels"> }) {
   const [content, setContent] = useState("");
   const sendMessage = useMutation(api.functions.message.create);
   const sendTypingIndicator = useMutation(api.functions.typing.upsert);
-  //   const generateUploadUrl = useMutation(
-  //     api.functions.storage.generateUploadUrl
-  //   );
-  //   const removeFileById = useMutation(api.functions.storage.removeFileById);
-  //   const [attachments, setAttachments] = useState<Id<"_storage">[]>([]);
-  //   const [files, setFiles] = useState<File[]>([]);
-  //   const [isUploading, setIsUploading] = useState(false);
-  //   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const imageUpload = useImageUpload();
-
-  //   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const file = e.target.files?.[0];
-  //     if (!file) return;
-  //     setFiles([...files, file]);
-  //     setIsUploading(true);
-  //     const url = await generateUploadUrl();
-  //     const res = await fetch(url, {
-  //       method: "POST",
-  //       body: file,
-  //     });
-  //     const { storageId } = (await res.json()) as { storageId: Id<"_storage"> };
-  //     setAttachments([...attachments, storageId]);
-  //     setIsUploading(false);
-  //   };
-
-  const handleRemoveFile = async (index: number) => {
-    //   try {
-    //     if (attachments[index]) {
-    //       await removeFileById({ storageId: attachments[index] });
-    //     }
-    //     const newAttachments = attachments.filter((_, i) => i !== index);
-    //     const newFiles = files.filter((_, i) => i !== index);
-    //     setAttachments(newAttachments);
-    //     setFiles(newFiles);
-    //   } catch (error) {
-    //     toast.error("Failed to remove file", {
-    //       description: error instanceof Error ? error.message : "Unknown error",
-    //     });
-    //   }
-  };
+  const imageUpload = useImageUpload({ singleFile: false });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -229,7 +189,7 @@ function MessageInput({ id }: { id: Id<"directMessages" | "channels"> }) {
             <ImagePreview
               urls={imageUpload.previewUrls}
               isUploading={imageUpload.isUploading}
-              onRemove={handleRemoveFile}
+              onRemove={imageUpload.removeByIndex}
             />
           )}
           <Input
@@ -276,7 +236,7 @@ function ImagePreview({
                 onRemove(index);
               }}
             >
-              <Trash />
+              <Trash className="dark:text-black" />
               <span className="sr-only">Remove</span>
             </Button>
           </div>

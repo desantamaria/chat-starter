@@ -3,10 +3,11 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { useRef, useState } from "react";
 
-export function useImageUpload() {
+export function useImageUpload({ singleFile }: { singleFile: boolean }) {
   const generateUploadUrl = useMutation(
     api.functions.storage.generateUploadUrl
   );
+  const removeFileById = useMutation(api.functions.storage.removeFileById);
 
   const [storageIds, setStorageIds] = useState<Id<"_storage">[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -26,7 +27,11 @@ export function useImageUpload() {
     if (!file) return;
 
     setIsUploading(true);
-    setPreviewUrls([...previewUrls, URL.createObjectURL(file)]);
+    if (singleFile) {
+      setPreviewUrls([URL.createObjectURL(file)]);
+    } else {
+      setPreviewUrls([...previewUrls, URL.createObjectURL(file)]);
+    }
 
     const url = await generateUploadUrl();
     const res = await fetch(url, {
@@ -34,7 +39,15 @@ export function useImageUpload() {
       body: file,
     });
     const data = (await res.json()) as { storageId: Id<"_storage"> };
-    setStorageIds([...storageIds, data.storageId]);
+    if (singleFile) {
+      if (storageIds[0] !== undefined && storageIds[0] !== null) {
+        await removeFileById({ storageId: storageIds[0] });
+      }
+
+      setStorageIds([data.storageId]);
+    } else {
+      setStorageIds([...storageIds, data.storageId]);
+    }
     setIsUploading(false);
   };
 
@@ -46,12 +59,21 @@ export function useImageUpload() {
     }
   };
 
+  const removeByIndex = async (index: number) => {
+    if (storageIds[index]) {
+      await removeFileById({ storageId: storageIds[index] });
+      setPreviewUrls(previewUrls.filter((_, i) => i !== index));
+      setStorageIds(storageIds.filter((_, i) => i !== index));
+    }
+  };
+
   return {
     storageIds,
     previewUrls,
     isUploading,
     open,
     reset,
+    removeByIndex,
     inputProps: {
       type: "file",
       className: "hidden",
