@@ -33,7 +33,7 @@ export function DMSidebar() {
   const pathname = usePathname();
   if (!user) return null;
   return (
-    <Sidebar className="left-12">
+    <Sidebar className="left-13">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>

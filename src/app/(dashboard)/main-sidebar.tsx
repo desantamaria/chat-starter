@@ -20,7 +20,7 @@ export function MainSidebar() {
   const pathname = usePathname();
   return (
     <Sidebar collapsible="icon">
-      <SidebarContent>
+      <SidebarContent className="flex flex-col">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -36,11 +36,18 @@ export function MainSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               {servers?.map((server) => (
-                <SidebarMenuItem key={server._id}>
+                <SidebarMenuItem
+                  key={server._id}
+                  //   className={`${pathname.startsWith(`/servers/${server._id}`) ? "bg-white" : ""}`}
+                >
                   <SidebarMenuButton
-                    className="group-data-[collapsible=icon]:!p-0 p-0"
+                    className="group-data-[collapsible=icon]:!p-0 p-0 group"
                     tooltip={server.name}
                   >
+                    <div
+                      className={`absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white opacity-0 transition-all
+                        ${pathname.startsWith(`/servers/${server._id}`) ? "h-10 opacity-100" : "hover:opacity-100"}`}
+                    />
                     <Link
                       href={`/servers/${server._id}/channels/${server.defaultChannelId}`}
                     >
