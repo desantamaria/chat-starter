@@ -46,6 +46,7 @@ export const create = authenticatedMutation({
       content,
       attachments,
       dmOrChannelId,
+      edited: false,
       sender: ctx.user._id,
     });
     await ctx.scheduler.runAfter(0, internal.functions.typing.remove, {

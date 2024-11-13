@@ -107,7 +107,12 @@ function MessageItem({ message }: { message: Message }) {
                 setEditMode={setEditMode}
               />
             ) : (
-              <p className="text-sm">{message.content}</p>
+              <p className="text-sm flex gap-2">
+                {message.content}
+                {message.edited && (
+                  <span className="text-muted-foreground">(Edited)</span>
+                )}
+              </p>
             )}
           </>
         )}
