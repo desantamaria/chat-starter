@@ -62,6 +62,7 @@ export default defineSchema({
     attachments: v.optional(v.array(v.id("_storage"))),
     deleted: v.optional(v.boolean()),
     deletedReason: v.optional(v.string()),
+    edited: v.optional(v.boolean()),
   }).index("by_dmOrChannelId", ["dmOrChannelId"]),
   typingIndicators: defineTable({
     user: v.id("users"),

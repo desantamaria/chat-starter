@@ -1,10 +1,10 @@
 import { v } from "convex/values";
+import { internal } from "../_generated/api";
 import {
   assertChannelMember,
   authenticatedMutation,
   authenticatedQuery,
 } from "./helpers";
-import { api, internal } from "../_generated/api";
 
 export const list = authenticatedQuery({
   args: {
@@ -80,5 +80,24 @@ export const remove = authenticatedMutation({
         })
       );
     }
+  },
+});
+
+export const edit = authenticatedMutation({
+  args: {
+    id: v.id("messages"),
+    content: v.string(),
+  },
+  handler: async (ctx, { id, content }) => {
+    const message = await ctx.db.get(id);
+    if (!message) {
+      throw new Error("Message does not exist");
+    } else if (message.sender !== ctx.user._id) {
+      throw new Error("You are not the sender of this message");
+    }
+    await ctx.db.patch(id, {
+      content: content,
+      edited: true,
+    });
   },
 });
