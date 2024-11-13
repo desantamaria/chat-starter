@@ -22,6 +22,7 @@ import { FunctionReturnType } from "convex/server";
 import {
   LoaderIcon,
   MoreHorizontalIcon,
+  Pencil,
   PlusIcon,
   SendIcon,
   Trash,
@@ -66,6 +67,7 @@ function TypingIndicator({ id }: { id: Id<"directMessages" | "channels"> }) {
 type Message = FunctionReturnType<typeof api.functions.message.list>[number];
 
 function MessageItem({ message }: { message: Message }) {
+  const [editMode, setEditMode] = useState(false);
   return (
     <div className="flex items-center px-4 gap-2 py-2">
       <Avatar className="size-8 border">
@@ -79,6 +81,7 @@ function MessageItem({ message }: { message: Message }) {
             {formatDate(parseTimestamp(message._creationTime))}
           </span>
         </p>
+        {/* Display Deletion Reason if message is deleted */}
         {message.deleted ? (
           <>
             <p className={`text-sm text-destructive`}>
@@ -96,7 +99,16 @@ function MessageItem({ message }: { message: Message }) {
           </>
         ) : (
           <>
-            <p className="text-sm">{message.content}</p>
+            {/* Display Edit Input if in edit mode */}
+            {editMode ? (
+              <EditMessageInput
+                id={message._id}
+                content={message.content}
+                setEditMode={setEditMode}
+              />
+            ) : (
+              <p className="text-sm">{message.content}</p>
+            )}
           </>
         )}
         <div className="w-[%50]">
@@ -113,7 +125,11 @@ function MessageItem({ message }: { message: Message }) {
           ))}
         </div>
       </div>
-      <MessageActions message={message} />
+      {message.deleted ? (
+        <></>
+      ) : (
+        <MessageActions message={message} setEditMode={setEditMode} />
+      )}
     </div>
   );
 }
@@ -155,7 +171,13 @@ function ImageFocus({ children }: { children: React.ReactNode }) {
   );
 }
 
-function MessageActions({ message }: { message: Message }) {
+function MessageActions({
+  message,
+  setEditMode,
+}: {
+  message: Message;
+  setEditMode: (state: boolean) => void;
+}) {
   const user = useQuery(api.functions.user.get);
   const removeMessage = useMutation(api.functions.message.remove);
   if (!user || message.sender?._id !== user._id) return null;
@@ -167,7 +189,16 @@ function MessageActions({ message }: { message: Message }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem
-          className="text-destructive"
+          className="cursor-pointer"
+          onClick={() => {
+            setEditMode(true);
+          }}
+        >
+          <Pencil />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive cursor-pointer"
           onClick={() => {
             removeMessage({ id: message._id });
           }}
@@ -177,6 +208,61 @@ function MessageActions({ message }: { message: Message }) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function EditMessageInput({
+  id,
+  content,
+  setEditMode,
+}: {
+  id: Id<"messages">;
+  content: string;
+  setEditMode: (state: boolean) => void;
+}) {
+  const editMessage = useMutation(api.functions.message.edit);
+  const [editedMsg, setEditedMsg] = useState(content);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (content.length === 0) {
+      return;
+    }
+    try {
+      await editMessage({
+        id: id,
+        content: editedMsg,
+      });
+      setEditedMsg("");
+      setEditMode(false);
+      toast.success("Message updated");
+    } catch (error) {
+      toast.error("Failed to edit message", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
+  return (
+    <form className="flex flex-col gap-1 w-full" onSubmit={handleSubmit}>
+      <Input
+        onChange={(e) => {
+          setEditedMsg(e.target.value);
+        }}
+        value={editedMsg}
+      ></Input>
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => {
+            setEditMode(false);
+          }}
+        >
+          Cancel
+        </Button>
+        <Button>Save</Button>
+      </div>
+    </form>
   );
 }
 
