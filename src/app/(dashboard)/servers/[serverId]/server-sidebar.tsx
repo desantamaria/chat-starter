@@ -22,6 +22,7 @@ import { CreateChannel } from "./create-channel";
 import { TrashIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Voice } from "./voice";
+import { ServerSettings } from "./server-settings";
 
 export function ServerSidebar({ id }: { id: Id<"servers"> }) {
   const pathname = usePathname();
@@ -49,6 +50,7 @@ export function ServerSidebar({ id }: { id: Id<"servers"> }) {
   return (
     <Sidebar className="left-12">
       <SidebarHeader>{server?.name}</SidebarHeader>
+      {server && <ServerSettings serverId={id} />}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Channels</SidebarGroupLabel>

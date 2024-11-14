@@ -31,7 +31,7 @@ export function CreateServer() {
     try {
       const { serverId, defaultChannelId } = await createServer({
         name: name,
-        iconId: imageUpload.storageIds[imageUpload.previewUrls.length - 1],
+        iconId: imageUpload.storageIds[0],
       });
       router.push(`/servers/${serverId}/channels/${defaultChannelId}`);
       setOpen(false);

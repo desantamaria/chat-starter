@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import {
   assertServerMember,
+  assertServerOwner,
   authenticatedMutation,
   authenticatedQuery,
 } from "./helpers";
@@ -81,5 +82,19 @@ export const create = authenticatedMutation({
       userId: ctx.user._id,
     });
     return { serverId, defaultChannelId };
+  },
+});
+
+export const edit = authenticatedMutation({
+  args: {
+    id: v.id("servers"),
+    name: v.optional(v.string()),
+    ownerId: v.optional(v.id("users")),
+    iconId: v.optional(v.id("_storage")),
+    defaultChannelId: v.optional(v.id("channels")),
+  },
+  handler: async (ctx, { id }) => {
+    await assertServerOwner(ctx, id);
+    await ctx.db.patch(id, {});
   },
 });
