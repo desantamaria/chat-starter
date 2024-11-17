@@ -50,7 +50,7 @@ export function ServerSidebar({ id }: { id: Id<"servers"> }) {
   return (
     <Sidebar className="left-12">
       <SidebarHeader>{server?.name}</SidebarHeader>
-      {server && <ServerSettings serverId={id} />}
+      {server && <ServerSettings server={server} />}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Channels</SidebarGroupLabel>

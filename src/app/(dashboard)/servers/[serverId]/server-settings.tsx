@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,27 +15,44 @@ import { Label } from "@/components/ui/label";
 import { SidebarGroupAction } from "@/components/ui/sidebar";
 import { useMutation } from "convex/react";
 import { ImageIcon, Settings } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function ServerSettings({ serverId }: { serverId: Id<"servers"> }) {
+export interface Server {
+  _id: Id<"servers">;
+  _creationTime: number;
+  iconId?: Id<"_storage"> | undefined;
+  defaultChannelId?: Id<"channels"> | undefined;
+  name: string;
+  ownerId: Id<"users">;
+  iconUrl: string | null;
+}
+export function ServerSettings({ server }: { server: Server }) {
   const imageUpload = useImageUpload({ singleFile: true });
   const [open, setOpen] = useState(false);
   const editServer = useMutation(api.functions.server.edit);
 
-  const [serverName, setServerName] = useState("");
+  const [serverName, setServerName] = useState(server.name);
+
+  useEffect(() => {
+    if (server.iconId && server.iconUrl) {
+      imageUpload.setStorageIds([server.iconId]);
+      imageUpload.setPreviewUrls([server.iconUrl]);
+    }
+  }, [server]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       editServer({
-        id: serverId,
+        id: server._id,
         name: serverName,
         iconId: imageUpload.storageIds[0],
+        ownerId: server.ownerId,
       });
       toast.success("Settings saved");
       setOpen(false);

@@ -36,7 +36,14 @@ export const get = authenticatedQuery({
   },
   handler: async (ctx, { id }) => {
     await assertServerMember(ctx, id);
-    return await ctx.db.get(id);
+    const server = await ctx.db.get(id);
+    if (!server) {
+      return null;
+    }
+    return {
+      ...server,
+      iconUrl: server.iconId ? await ctx.storage.getUrl(server.iconId) : null,
+    };
   },
 });
 
@@ -93,8 +100,8 @@ export const edit = authenticatedMutation({
     iconId: v.optional(v.id("_storage")),
     defaultChannelId: v.optional(v.id("channels")),
   },
-  handler: async (ctx, { id }) => {
+  handler: async (ctx, { id, name, ownerId, iconId, defaultChannelId }) => {
     await assertServerOwner(ctx, id);
-    await ctx.db.patch(id, {});
+    await ctx.db.patch(id, { name, ownerId, iconId, defaultChannelId });
   },
 });

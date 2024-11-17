@@ -86,5 +86,7 @@ export function useImageUpload({ singleFile }: { singleFile: boolean }) {
       ref: inputRef,
       onChange: handleImageChange,
     },
+    setStorageIds,
+    setPreviewUrls,
   };
 }
