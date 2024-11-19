@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 export interface Server {
   _id: Id<"servers">;
@@ -46,7 +47,8 @@ export function ServerSettings({ server }: { server: Server }) {
   const imageUpload = useImageUpload({ singleFile: true });
   const [open, setOpen] = useState(false);
   const editServer = useMutation(api.functions.server.edit);
-
+  const router = useRouter();
+  const deleteServer = useMutation(api.functions.server.remove);
   const [serverName, setServerName] = useState(server.name);
 
   useEffect(() => {
@@ -71,6 +73,20 @@ export function ServerSettings({ server }: { server: Server }) {
       imageUpload.reset();
     } catch (error) {
       toast.error("Failed to save settings", {
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      deleteServer({ id: server._id });
+      router.push(`/dms`);
+      toast.success("Server has been deleted.");
+      setOpen(false);
+    } catch (error) {
+      toast.error("Failed to delete server", {
         description:
           error instanceof Error ? error.message : "An unknown error occurred",
       });
@@ -127,7 +143,7 @@ export function ServerSettings({ server }: { server: Server }) {
           </div>
           <DialogFooter>
             <div className="w-full flex justify-between">
-              <DeleteWarning />
+              <DeleteWarning handleDelete={handleDelete} />
               <Button type="submit">Save</Button>
             </div>
           </DialogFooter>
@@ -137,7 +153,7 @@ export function ServerSettings({ server }: { server: Server }) {
   );
 }
 
-function DeleteWarning() {
+function DeleteWarning({ handleDelete }: { handleDelete: () => void }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -155,7 +171,7 @@ function DeleteWarning() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={handleDelete}>Confirm</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
