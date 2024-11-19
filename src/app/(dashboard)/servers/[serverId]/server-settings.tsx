@@ -53,6 +53,7 @@ export function ServerSettings({ server }: { server: Server }) {
         name: serverName,
         iconId: imageUpload.storageIds[0],
         ownerId: server.ownerId,
+        defaultChannelId: server.defaultChannelId,
       });
       toast.success("Settings saved");
       setOpen(false);
