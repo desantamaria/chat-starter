@@ -105,3 +105,31 @@ export const edit = authenticatedMutation({
     await ctx.db.patch(id, { name, ownerId, iconId, defaultChannelId });
   },
 });
+
+export const remove = authenticatedMutation({
+  args: {
+    id: v.id("servers"),
+  },
+  handler: async (ctx, { id }) => {
+    await assertServerOwner(ctx, id);
+
+    const channels = await ctx.db
+      .query("channels")
+      .withIndex("by_serverId", (q) => q.eq("serverId", id))
+      .collect();
+
+    await Promise.all(
+      channels.map(async (channel) => {
+        await ctx.db.delete(channel._id);
+      })
+    );
+
+    const server = await ctx.db.get(id);
+    if (server) {
+      if (server.iconId) {
+        await ctx.storage.delete(server.iconId);
+      }
+      await ctx.db.delete(server._id);
+    }
+  },
+});
