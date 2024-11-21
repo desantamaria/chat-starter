@@ -53,7 +53,7 @@ export default defineSchema({
     expiresAt: v.optional(v.number()),
     maxUses: v.optional(v.number()),
     uses: v.number(),
-  }),
+  }).index("by_serverId", ["serverId"]),
 
   messages: defineTable({
     sender: v.id("users"),

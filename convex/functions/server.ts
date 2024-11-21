@@ -113,17 +113,40 @@ export const remove = authenticatedMutation({
   handler: async (ctx, { id }) => {
     await assertServerOwner(ctx, id);
 
+    // Remove related channels
     const channels = await ctx.db
       .query("channels")
       .withIndex("by_serverId", (q) => q.eq("serverId", id))
       .collect();
-
     await Promise.all(
       channels.map(async (channel) => {
         await ctx.db.delete(channel._id);
       })
     );
 
+    // Remove related invites
+    const invites = await ctx.db
+      .query("invites")
+      .withIndex("by_serverId", (q) => q.eq("serverId", id))
+      .collect();
+    await Promise.all(
+      invites.map(async (invite) => {
+        await ctx.db.delete(invite._id);
+      })
+    );
+
+    // Remove relationship between members and server
+    const serverMembers = await ctx.db
+      .query("serverMembers")
+      .withIndex("by_serverId", (q) => q.eq("serverId", id))
+      .collect();
+    await Promise.all(
+      serverMembers.map(async (serverMember) => {
+        await ctx.db.delete(serverMember._id);
+      })
+    );
+
+    // Remove server
     const server = await ctx.db.get(id);
     if (server) {
       if (server.iconId) {
