@@ -14,15 +14,15 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useMutation, useQuery } from "convex/react";
+import { Ellipsis } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { CreateChannel } from "./create-channel";
-import { TrashIcon } from "lucide-react";
-import { toast } from "sonner";
-import { Voice } from "./voice";
 import { ServerSettings } from "./server-settings";
+import { Voice } from "./voice";
 
 export function ServerSidebar({ id }: { id: Id<"servers"> }) {
   const pathname = usePathname();
@@ -58,7 +58,7 @@ export function ServerSidebar({ id }: { id: Id<"servers"> }) {
           <SidebarGroupContent>
             <SidebarMenu>
               {channels?.map((channel) => (
-                <SidebarMenuItem key={channel._id}>
+                <SidebarMenuItem key={channel._id} className="group">
                   <SidebarMenuButton
                     isActive={
                       pathname === `/servers/${id}/channels/${channel._id}`
@@ -66,13 +66,20 @@ export function ServerSidebar({ id }: { id: Id<"servers"> }) {
                     asChild
                   >
                     <Link href={`/servers/${id}/channels/${channel._id}`}>
-                      {channel.name}
+                      <div className="flex gap-2">
+                        <p>{channel.name}</p>
+                        {server?.defaultChannelId === channel._id ? (
+                          <p className="text-muted-foreground">(default)</p>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
                     </Link>
                   </SidebarMenuButton>
                   <SidebarMenuAction
                     onClick={() => handleChannelDelete(channel._id)}
                   >
-                    <TrashIcon />
+                    <Ellipsis />
                   </SidebarMenuAction>
                 </SidebarMenuItem>
               ))}
