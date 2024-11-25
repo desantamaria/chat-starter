@@ -19,10 +19,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { CreateChannel } from "./create-channel";
-import { TrashIcon } from "lucide-react";
+import { Ellipsis, TrashIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Voice } from "./voice";
 import { ServerSettings } from "./server-settings";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function ServerSidebar({ id }: { id: Id<"servers"> }) {
   const pathname = usePathname();
@@ -69,10 +77,11 @@ export function ServerSidebar({ id }: { id: Id<"servers"> }) {
                       {channel.name}
                     </Link>
                   </SidebarMenuButton>
-                  <SidebarMenuAction
-                    onClick={() => handleChannelDelete(channel._id)}
-                  >
-                    <TrashIcon />
+                  <SidebarMenuAction>
+                    <ChannelOptions
+                      id={channel._id}
+                      handleChannelDelete={handleChannelDelete}
+                    />
                   </SidebarMenuAction>
                 </SidebarMenuItem>
               ))}
@@ -92,5 +101,26 @@ export function ServerSidebar({ id }: { id: Id<"servers"> }) {
         </SidebarGroup>
       </SidebarFooter>
     </Sidebar>
+  );
+}
+
+function ChannelOptions({
+  id,
+  handleChannelDelete,
+}: {
+  id: Id<"channels">;
+  handleChannelDelete: (id: Id<"channels">) => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Ellipsis />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => handleChannelDelete(id)}>
+          <TrashIcon /> Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
